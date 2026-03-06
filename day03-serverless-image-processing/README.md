@@ -82,9 +82,9 @@ DynamoDB updated → Status: RESIZED_SUCCESS
 
 ---
 
-### Step 2 — IAM Role
+### Step 2 — IAM Policy
 
-Create a role named **`ImageWorkerRole`** with the following managed policies:
+Assign policies to default role created for lambda with the following managed policies:
 
 | Policy                        | Purpose                  |
 | ----------------------------- | ------------------------ |
@@ -92,8 +92,6 @@ Create a role named **`ImageWorkerRole`** with the following managed policies:
 | `AmazonSQSFullAccess`         | Poll and delete messages |
 | `AmazonDynamoDBFullAccess`    | Read/write metadata      |
 | `AWSLambdaBasicExecutionRole` | Write CloudWatch logs    |
-
-> IAM → Roles → Create Role → AWS Service → Lambda
 
 ---
 
@@ -109,7 +107,7 @@ Create a role named **`ImageWorkerRole`** with the following managed policies:
 In the Lambda console → **Add a Layer** → **Specify an ARN**:
 
 ```
-arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p312-Pillow:1
+arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p314-Pillow:1
 ```
 
 > 📍 Update the ARN if you're deploying outside `us-east-1` or using a different Python version. See [Klayers releases](https://github.com/keithrozario/Klayers).
