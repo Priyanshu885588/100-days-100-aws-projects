@@ -1,4 +1,4 @@
-# Day 06: Automated Infrastructure Monitoring & Alerting 🚀
+# Day 05: Automated Infrastructure Monitoring & Alerting 🚀
 
 ## 📋 Project Overview
 
