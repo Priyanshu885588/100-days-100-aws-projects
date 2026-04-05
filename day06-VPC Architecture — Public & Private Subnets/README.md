@@ -15,7 +15,7 @@ This is the standard for security in every top-tier tech company.
 ## 🏗️ The Architecture Plan
 
 The goal is to create an isolated environment where traffic flows only where we allow it.
-![Architecture Diagram](./architecture.png)
+![Architecture Diagram](./architecture1.png)
 
 ### 🔧 Network Components:
 
