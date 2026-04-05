@@ -1,15 +1,12 @@
 # 🏗️ Day 06: VPC Architecture & Design — The Blueprint ⛰️📋
 
-## 📌 Project Overview
+## 📋 Project Overview
 
 Building in the cloud without a custom network is like building a house without a foundation.
 
-On **Day 06**, we are designing a **Production-Grade VPC Architecture**.
+On Day 06, we are designing a **Production-Grade VPC Architecture**.
 
-We aren't just clicking "Create VPC"; we are architecting a **2-tier network** that separates:
-
-- 🌐 Public Web Layer
-- 🔒 Private Application Layer
+We aren't just clicking "Create VPC"; we are architecting a **2-tier network** that separates our **Public Web Layer** from our **Private Application Layer**.
 
 This is the standard for security in every top-tier tech company.
 
@@ -17,79 +14,72 @@ This is the standard for security in every top-tier tech company.
 
 ## 🏗️ The Architecture Plan
 
-![Architecture Diagram](./architecture.png)
-The goal is to create an isolated environment where **traffic flows only where we allow it**.
+The goal is to create an isolated environment where traffic flows only where we allow it.
+
+### 🔧 Network Components:
+
+- **VPC (The Perimeter):** A custom `10.0.0.0/16` network
+- **Public Subnet (Tier 1):** The "Front Door" for our Web Servers
+- **Private Subnet (Tier 2):** The "Vault" for our Application/Database servers
+- **Internet Gateway (IGW):** The bridge between our VPC and the Public Internet
+- **Route Tables:** The "Traffic Police" that decide where data packets go
 
 ---
 
-## 🔢 Deep Dive: Understanding CIDR (Classless Inter-Domain Routing)
+## 🔢 Deep Dive: Understanding CIDR & Subnetting
 
-### ❓ What is CIDR?
+To build a network, you must understand the math behind the addresses.
 
-CIDR is the standard method used to manage IP addresses in the cloud.
+### 📊 CIDR Breakdown
 
-Instead of fixed "classes" of IPs, CIDR allows us to define a specific "block" of addresses using a slash notation:
+| Component      | CIDR Block  | Total IPs | Purpose                      |
+| -------------- | ----------- | --------- | ---------------------------- |
+| VPC            | 10.0.0.0/16 | 65,536    | The entire network range     |
+| Public Subnet  | 10.0.1.0/24 | 256       | High-exposure web resources  |
+| Private Subnet | 10.0.2.0/24 | 256       | Sensitive internal resources |
 
-- `/16`
-- `/24`
+---
 
-### 🎯 Why is it Important?
+### 📘 CIDR Explanation
 
-- ⚡ **Efficiency** → Prevents wasting IP addresses
-- 🧩 **Organization** → Helps divide networks into subnets
-- 🚦 **Routing** → AWS uses CIDR blocks to route traffic
+- `/16` → First **2 octets fixed** → `10.0.x.x`
+- `/24` → First **3 octets fixed** → `10.0.1.x`
 
-### 📦 The CIDR Blocks We Are Using
+---
 
-We are using the **Private IP Range (RFC 1918)**.
+### ⚠️ NoCap Tip
 
-#### 🏠 VPC CIDR → `10.0.0.0/16`
+In AWS, the first **4 IP addresses** and the last **1 IP address** in every subnet are reserved by AWS for networking (DNS, Gateway, etc.).
 
-- First two parts fixed → `10.0`
-- Total IPs → **65,536**
-- Think of it as your **Grand Plot of Land**
-
-#### 🧱 Subnet CIDR → `10.0.1.0/24`
-
-- First three parts fixed → `10.0.1`
-- Total IPs → **256 per subnet**
-
-⚠️ **AWS Note:**
-
-- First 4 IPs → Reserved
-- Last 1 IP → Reserved
-- ✅ Usable IPs → **251**
+👉 So a `/24` gives you **251 usable IPs**
 
 ---
 
 ## 🛡️ Security Design: The "Chain of Trust"
 
-Instead of exposing everything, we use **Security Group Referencing**.
-
----
+Instead of opening ports to the whole world, we use **Security Group Referencing**.
 
 ### 🌐 Web Security Group (`web-sg`)
 
-- Allow HTTP (80) → `0.0.0.0/0` (Public)
-- Allow SSH (22) → **Only Your IP**
+- Inbound: Allow HTTP (80) from `0.0.0.0/0` (The World)
+- Inbound: Allow SSH (22) from Only Your IP
 
 ---
 
 ### 🔒 App Security Group (`app-sg`)
 
-- Allow SSH (22) → **ONLY from `web-sg`**
+- Inbound: Allow SSH (22) ONLY from `web-sg`
 
 ---
 
 ### 🔐 Result
 
-Even if a hacker has your private key:
+A hacker cannot SSH into your App server even if they have the key.
 
-- ❌ Cannot directly access App Server
-- ✅ Must go through Web Server (**Jump Box**)
+They must go through the **Web Server first (Bastion Host pattern)**.
 
 ---
 
 ## 🚦 Routing Logic
 
-### 🌍 Public Subnet
+### 🌍 Public Route
