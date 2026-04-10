@@ -194,6 +194,33 @@ It works instantly — no reinstallation, no configuration! ✅
 
 ---
 
+## EBS Snapshot vs. AMI: Quick Comparison
+
+| Feature          | EBS Snapshot                               | AMI (Amazon Machine Image)                       |
+| :--------------- | :----------------------------------------- | :----------------------------------------------- |
+| **What is it?**  | A point-in-time copy of a **single** disk. | A blueprint/template for an **entire** server.   |
+| **Bootable?**    | **No.** (Must be attached to an instance)  | **Yes.** (Can launch new instances directly)     |
+| **Best For**     | Routine data backups and "undo" points.    | Auto Scaling, Disaster Recovery, and Migrations. |
+| **Relationship** | The **"Ingredient"** (Data only).          | The **"Finished Meal"** (OS + Data + Config).    |
+
+---
+
+## When to use which?
+
+### 💾 Use a Snapshot when...
+
+You are performing a **Database Upgrade** or making risky changes to a filesystem.
+
+- **Workflow:** Snapshot the volume right before you start. If the upgrade fails or data gets corrupted, you can quickly create a new volume from that snapshot and swap it back in.
+
+### 🚀 Use an AMI when...
+
+You have finished configuring your **Node.js environment** and need to move it from "Testing" to "Production."
+
+- **Workflow:** You "bake" the AMI to capture the OS, installed packages, and configuration. You then share this "Golden Image" across accounts to ensure your production environment is an identical clone of what you tested.
+
+---
+
 ## 🧪 Key Learning Points
 
 ### 1. Authentication Plugins Matter
